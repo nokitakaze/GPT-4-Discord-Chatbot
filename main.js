@@ -72,10 +72,11 @@ client.on('messageCreate', async (/** @type {Message} */ message) => {
         return;
     }
 
+    console.log('At ', new Date(message.createdTimestamp), '. Message from user ', message.author.username,
+        '. Text: ', message.content)
     const response = await generateResponse(message.id, OPENAI_API_KEY);
     // const newMessage = await message.channel.send(response);
     const newMessage = await message.reply(response);
-    console.debug(newMessage);
     thisBotMessages.add(newMessage.id);
 });
 
@@ -122,7 +123,7 @@ async function generateResponse(messageId) {
             n: 1
         });
 
-        console.debug(response);
+        console.log('OpenAI response. Model', response.model, '. Text: ', response.choices[0].message.content);
         return response.choices[0].message.content;
     } catch (error) {
         console.error('Error generating response:', error.response ? error.response.data : error);
