@@ -127,10 +127,10 @@ async function generateResponse(messageId) {
         return response.choices[0].message.content;
     } catch (error) {
         console.error('Error generating response:', error.response ? error.response.data : error);
-        if (error.response) {
-            return `Sorry, I am unable to generate a response at this time ${error.response.data.error.type}: ${error.response.data.error.message}`;
+        if (error.error) {
+            return `Sorry, I am unable to generate a response at this time ${error.error.type}: ${error.error.message}`;
         } else {
-            return 'Sorry, I am unable to generate a response at this time.';
+            return `Sorry, I am unable to generate a response at this time. ${error}`;
         }
     }
 }
