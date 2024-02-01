@@ -25,6 +25,8 @@ const unusefulMessagesLifetime = 24 * 3600 * 1000;
 let botName;
 const thisBotMessages = new Set();
 const allMessages = {};
+let needShutdown = false;
+let currentProcessingMessaged = 0;
 
 client.on('ready', () => {
     console.log(`Logged in`);
@@ -52,6 +54,10 @@ client.on('ready', () => {
 });
 
 client.on('messageCreate', async (/** @type {Message} */ message) => {
+    if (needShutdown) {
+        return;
+    }
+
     allMessages[message.id] = {
         id: message.id,
         referenceMessageId: message.reference?.messageId ?? null,
@@ -74,6 +80,7 @@ client.on('messageCreate', async (/** @type {Message} */ message) => {
 
     console.log('At ', new Date(message.createdTimestamp), '. Message from user ', message.author.username,
         '. Text: ', message.content)
+    currentProcessingMessaged++;
     const response = await generateResponse(message.id, OPENAI_API_KEY);
     // const newMessage = await message.channel.send(response);
     if (response.length <= 1950) {
@@ -90,6 +97,8 @@ client.on('messageCreate', async (/** @type {Message} */ message) => {
             prevMessage = newMessage;
         }
     }
+
+    currentProcessingMessaged--;
 });
 
 async function generateResponse(messageId) {
@@ -225,5 +234,15 @@ async function infiniteCleanMessages() {
 infiniteDrawMemoryUsage();
 // noinspection JSIgnoredPromiseFromCall
 infiniteCleanMessages();
+
+process.on('SIGINT', async function() {
+    console.log("Gracefully shutting down from SIGINT (Ctrl+C)");
+    needShutdown = true;
+    while (currentProcessingMessaged > 0) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    process.exit(0);
+});
 
 client.login(DISCORD_BOT_TOKEN).then();
