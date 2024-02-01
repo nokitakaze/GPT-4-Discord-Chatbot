@@ -131,7 +131,7 @@ async function generateResponse(messageId) {
         const response = await openai.chat.completions.create({
             model: GPT_MODEL,
             messages: [...dialog].reverse(),
-            max_tokens: 1024,
+            max_tokens: 4096,
             n: 1
         });
 
