@@ -76,8 +76,20 @@ client.on('messageCreate', async (/** @type {Message} */ message) => {
         '. Text: ', message.content)
     const response = await generateResponse(message.id, OPENAI_API_KEY);
     // const newMessage = await message.channel.send(response);
-    const newMessage = await message.reply(response);
-    thisBotMessages.add(newMessage.id);
+    if (response.length <= 1950) {
+        const newMessage = await message.reply(response);
+        thisBotMessages.add(newMessage.id);
+    } else {
+        let responseLeft = response;
+        let prevMessage = message;
+        while (responseLeft !== '') {
+            const s = responseLeft.substring(0, 1950);
+            const newMessage = await prevMessage.reply(s);
+            thisBotMessages.add(newMessage.id);
+            responseLeft = responseLeft.substring(1950);
+            prevMessage = newMessage;
+        }
+    }
 });
 
 async function generateResponse(messageId) {
