@@ -1,5 +1,5 @@
 const {Client, GatewayIntentBits, Partials, ActivityType} = require('discord.js');
-const {Configuration, OpenAIApi} = require('openai');
+const {OpenAI} = require('openai');
 
 require('dotenv').config();
 
@@ -15,10 +15,9 @@ const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const GPT_MODEL = process.env.GPT_MODEL ?? "gpt-4";
 const GPT_PROMPT = process.env.GPT_PROMPT ?? "You are a helpful assistant. Respond briefly, but informatively."
 
-const openAIConfiguration = new Configuration({
+const openai = new OpenAI({
     apiKey: OPENAI_API_KEY
 });
-const openai = new OpenAIApi(openAIConfiguration);
 
 const usefulMessagesLifetime = 7 * 24 * 3600 * 1000;
 const unusefulMessagesLifetime = 24 * 3600 * 1000;
@@ -116,7 +115,7 @@ async function generateResponse(messageId) {
 
         /** https://platform.openai.com/docs/guides/text-generation/chat-completions-api */
         /** https://platform.openai.com/docs/api-reference/chat/create */
-        const response = await openai.createChatCompletion({
+        const response = await openai.chat.completions.create({
             model: GPT_MODEL,
             messages: [...dialog].reverse(),
             max_tokens: 1024,
@@ -124,7 +123,7 @@ async function generateResponse(messageId) {
         });
 
         console.debug(response);
-        return response.data.choices[0].message.content;
+        return response.choices[0].message.content;
     } catch (error) {
         console.error('Error generating response:', error.response ? error.response.data : error);
         if (error.response) {
