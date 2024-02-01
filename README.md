@@ -6,6 +6,11 @@ This repository hosts the code for a Discord bot that leverages the power of Ope
 capabilities. Designed to facilitate dynamic interactions, the bot enriches Discord servers with responsive and intelligent
 dialogues.
 
+## Features
+
+- The bot supports a dialogue mode with multiple users, distinguishes between users, and tracks the context of the dialogue
+- It is possible to choose the bot's model
+
 ## Requirements
 
 - Node.js (v16.16 or newer) / Docker
@@ -39,6 +44,7 @@ dialogues.
     ```
     OPENAI_API_KEY=your_openai_api_key
     #GPT_MODEL=gpt-4
+    GPT_PROMPT="You are a helpful assistant. Respond briefly, but informatively."
     DISCORD_BOT_TOKEN=your_discord_bot_token
     ```
    Optionally set GPT_MODEL to the desired model: https://platform.openai.com/docs/models/overview
