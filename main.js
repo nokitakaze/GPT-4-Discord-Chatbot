@@ -169,7 +169,7 @@ async function infiniteDrawMemoryUsage() {
         console.log('Memory usage');
         const used = process.memoryUsage();
         for (let key in used) {
-            console.log(`${key} ${Math.round(used[key] * (100 * 1024 / 1024)) / 100} MB`);
+            console.log(`${key}\t${Math.round(used[key] * (100 / 1024 / 1024)) / 100} MB`);
         }
         await new Promise(resolve => setTimeout(resolve, 3600000));
     }
