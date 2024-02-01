@@ -8,7 +8,7 @@ dialogues.
 
 ## Requirements
 
-- Node.js (v16 or newer) / Docker
+- Node.js (v16.16 or newer) / Docker
 - Discord bot
 - OpenAI API
 

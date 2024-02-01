@@ -1,4 +1,4 @@
-FROM sitespeedio/node:ubuntu-22-04-nodejs-20.10.0
+FROM sitespeedio/node:ubuntu-20.04-nodejs-16.16.0
 
 WORKDIR /app
 COPY main.js .
