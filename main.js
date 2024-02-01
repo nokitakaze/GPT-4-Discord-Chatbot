@@ -236,7 +236,25 @@ infiniteDrawMemoryUsage();
 infiniteCleanMessages();
 
 process.on('SIGINT', async function() {
+    if (needShutdown) {
+        return;
+    }
+
     console.log("Gracefully shutting down from SIGINT (Ctrl+C)");
+    needShutdown = true;
+    while (currentProcessingMessaged > 0) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    process.exit(0);
+});
+
+process.on('SIGTERM', async function() {
+    if (needShutdown) {
+        return;
+    }
+
+    console.log("Gracefully shutting down from SIGTERM");
     needShutdown = true;
     while (currentProcessingMessaged > 0) {
         await new Promise(resolve => setTimeout(resolve, 100));
