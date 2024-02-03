@@ -223,7 +223,7 @@ async function infiniteCleanMessages() {
         }
 
         for (const messageId of forDeletion) {
-            allMessages.delete(messageId);
+            delete allMessages[messageId];
         }
 
         console.log(`${prevMessagesCount - Object.keys(allMessages).length} messages deleted`);
