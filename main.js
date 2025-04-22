@@ -12,11 +12,32 @@ const client = new Client({
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
-const GPT_MODEL = process.env.GPT_MODEL ?? "gpt-4";
+const GPT_MODEL = process.env.GPT_MODEL ?? "gpt-4.1";
 const GPT_PROMPT = process.env.GPT_PROMPT ?? "You are a helpful assistant. Respond briefly, but informatively."
 
+let GPT_DEFAULT_SYSTEM_ROLE;
+{
+    const no_system_role = [
+        'o1-mini',
+        'o1-preview',
+    ];
+
+    let is_no_system_role = false;
+    let lowered = GPT_MODEL.toLowerCase();
+    for (let prefix of no_system_role) {
+        if ((lowered === prefix) || lowered.startsWith(prefix + '-')) {
+            is_no_system_role = true;
+            break;
+        }
+    }
+
+    GPT_DEFAULT_SYSTEM_ROLE = is_no_system_role ? 'user' : 'system';
+}
+
+const GPT_SYSTEM_ROLE = process.env.GPT_SYSTEM_ROLE ?? GPT_DEFAULT_SYSTEM_ROLE;
+
 const openai = new OpenAI({
-    apiKey: OPENAI_API_KEY
+    apiKey: OPENAI_API_KEY,
 });
 
 const usefulMessagesLifetime = 7 * 24 * 3600 * 1000;
@@ -36,13 +57,18 @@ client.on('ready', () => {
     console.log(`Observing ${client.users.cache.size} users`);
     botName = client.user.username;
 
+    let statusText = `${GPT_MODEL}. ${GPT_PROMPT}`;
+    if (statusText.length > 50) {
+        statusText = statusText.substring(0, 50);
+    }
+
     // https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-structure
     // You could see available types in gateway.d.ts
     // noinspection JSCheckFunctionSignatures,JSUnresolvedReference
     client.user.setPresence({
         status: 'online',
         activities: [{
-            name: `${GPT_MODEL}. ${GPT_PROMPT}`,
+            name: statusText,
             type: ActivityType.Custom,
             // details: "...details...", // GPT_PROMPT
             // state: "...state...",
@@ -119,7 +145,7 @@ async function generateResponse(messageId) {
                     name: botName,
                 });
             } else {
-                // This is user message
+                // This is a user message
                 dialog.push({
                     role: "user",
                     content: message.text,
@@ -133,7 +159,7 @@ async function generateResponse(messageId) {
 
             lastChainId = message.referenceMessageId;
         }
-        dialog.push({role: "system", content: GPT_PROMPT});
+        dialog.push({role: GPT_SYSTEM_ROLE, content: [{type: "text", text: GPT_PROMPT}]});
 
         /** https://platform.openai.com/docs/guides/text-generation/chat-completions-api */
         /** https://platform.openai.com/docs/api-reference/chat/create */
