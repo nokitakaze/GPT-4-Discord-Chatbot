@@ -20,8 +20,8 @@ dialogues.
 ### Discord
 
 1. Create a new Discord bot https://discord.com/developers/applications
-2. [Your bot] -> Bot -> "Reset token" button for acquiring your **secret token**
-3. [Your bot] -> Bot -> Message content intent, Presence intent, Server members intent -> "On"
+2. [Your bot] → Bot → "Reset token" button for acquiring your **secret token**
+3. [Your bot] → Bot → Message content intent, Presence intent, Server members intent → "On"
 4. https://discord.com/oauth2/authorize?client_id=[BOT_ID]&scope=bot&permissions=274878023680
 
 ### OpenAI
@@ -30,8 +30,8 @@ dialogues.
    https://platform.openai.com/account/billing/overview
 2. Create a new API Key. For simplicity, I use Permissions=All.
    https://platform.openai.com/api-keys
-3. Select the model to be used. By default, it is gpt-4.
-   https://platform.openai.com/docs/models/overview
+3. Select the model to be used. By default, it is gpt-4.1.
+   https://platform.openai.com/docs/models
 
 ## Installation
 
@@ -47,7 +47,7 @@ dialogues.
     GPT_PROMPT="You are a helpful assistant. Respond briefly, but informatively."
     DISCORD_BOT_TOKEN=your_discord_bot_token
     ```
-   Optionally set GPT_MODEL to the desired model: https://platform.openai.com/docs/models/overview
+   Optionally set GPT_MODEL to the desired model: https://platform.openai.com/docs/models
 
 3. Start it with docker
    ```bash
