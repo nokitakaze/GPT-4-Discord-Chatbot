@@ -43,7 +43,7 @@ dialogues.
 2. Copy `.env.example` to `.env` and fill in your Discord bot token and OpenAI API key:
     ```
     OPENAI_API_KEY=your_openai_api_key
-    #GPT_MODEL=gpt-4
+    #GPT_MODEL=gpt-4.1
     GPT_PROMPT="You are a helpful assistant. Respond briefly, but informatively."
     DISCORD_BOT_TOKEN=your_discord_bot_token
     ```
