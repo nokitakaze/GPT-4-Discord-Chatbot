@@ -1,4 +1,4 @@
-FROM sitespeedio/node:ubuntu-20.04-nodejs-16.16.0
+FROM sitespeedio/node:ubuntu-24-04-nodejs-22.13.0
 
 WORKDIR /app
 
