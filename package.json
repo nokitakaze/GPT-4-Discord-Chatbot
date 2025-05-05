@@ -1,6 +1,6 @@
 {
   "name": "discord-gpt-4-chatbot",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Discord chatbot integrating GPT-4 for advanced conversational AI capabilities, enabling dynamic interactions and responses within Discord servers",
   "main": "main.js",
   "scripts": {
