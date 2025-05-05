@@ -4,7 +4,7 @@ const {OpenAI} = require('openai');
 require('dotenv').config();
 
 // noinspection JSUnresolvedReference
-const client = new Client({
+const discordClient = new Client({
     partials: [Partials.Channel, Partials.Message],
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent,
               GatewayIntentBits.GuildMessages]
@@ -49,13 +49,13 @@ const allMessages = {};
 let needShutdown = false;
 let currentProcessingMessaged = 0;
 
-client.on('ready', () => {
+discordClient.on('ready', () => {
     console.log(`Logged in`);
-    console.log(`Bot ID: ${client.user.id}`);
+    console.log(`Bot ID: ${discordClient.user.id}`);
     console.log(`Startup Time: ${new Date().toLocaleString()}`);
-    console.log(`Serving on ${client.guilds.cache.size} servers`);
-    console.log(`Observing ${client.users.cache.size} users`);
-    botName = client.user.username;
+    console.log(`Serving on ${discordClient.guilds.cache.size} servers`);
+    console.log(`Observing ${discordClient.users.cache.size} users`);
+    botName = discordClient.user.username;
 
     let statusText = `${GPT_MODEL}. ${GPT_PROMPT}`;
     if (statusText.length > 50) {
@@ -65,7 +65,7 @@ client.on('ready', () => {
     // https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-structure
     // You could see available types in gateway.d.ts
     // noinspection JSCheckFunctionSignatures,JSUnresolvedReference
-    client.user.setPresence({
+    discordClient.user.setPresence({
         status: 'online',
         activities: [{
             name: statusText,
@@ -79,7 +79,7 @@ client.on('ready', () => {
     });
 });
 
-client.on('messageCreate', async (/** @type {Message} */ message) => {
+discordClient.on('messageCreate', async (/** @type {Message} */ message) => {
     if (needShutdown) {
         return;
     }
@@ -97,7 +97,7 @@ client.on('messageCreate', async (/** @type {Message} */ message) => {
         return;
     }
 
-    const hasMentionMe = message.mentions.users.has(client.user.id);
+    const hasMentionMe = message.mentions.users.has(discordClient.user.id);
     const answerToMe = (message.reference && thisBotMessages.has(message.reference.messageId));
     if (!hasMentionMe && !answerToMe) {
         // I can't answer to this message
@@ -289,4 +289,4 @@ process.on('SIGTERM', async function() {
     process.exit(0);
 });
 
-client.login(DISCORD_BOT_TOKEN).then();
+discordClient.login(DISCORD_BOT_TOKEN).then();
