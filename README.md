@@ -10,10 +10,11 @@ dialogues.
 
 - The bot supports a dialogue mode with multiple users, distinguishes between users, and tracks the context of the dialogue
 - It is possible to choose the bot's model
+- Supports OpenAI models that are compatible with the Chat Completion API, including **o1, o3, o4-mini, gpt-4, gpt-4.5, gpt-4.1, gpt-4o**
 
 ## Requirements
 
-- Node.js (v16.16 or newer) / Docker
+- Node.js (v22.13 or newer) / Docker
 - Discord bot
 - OpenAI API
 
