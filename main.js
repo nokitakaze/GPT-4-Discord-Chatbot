@@ -15,10 +15,7 @@ const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const GPT_MODEL = process.env.GPT_MODEL ?? "openai/gpt-5-nano";
 const GPT_PROMPT = process.env.GPT_PROMPT ?? "You are a helpful assistant. Respond briefly, but informatively."
 
-const modelConfig = getModelConfig(
-    GPT_MODEL,
-    process.env.API_BASE_URL
-);
+const modelConfig = getModelConfig(GPT_MODEL, process.env.API_BASE_URL);
 
 const ACTUAL_GPT_MODEL = modelConfig.actualModelName;
 const GPT_PROVIDER = modelConfig.provider;
@@ -53,6 +50,48 @@ const allMessages = {};
 const usernames = {};
 let needShutdown = false;
 let currentProcessingMessaged = 0;
+
+const channelProcessingCounts = new Map();
+const channelTypingIntervals = new Map();
+
+async function startTyping(channel) {
+    const channelId = channel.id;
+    const currentCount = channelProcessingCounts.get(channelId) || 0;
+    channelProcessingCounts.set(channelId, currentCount + 1);
+
+    if (currentCount === 0) {
+        try {
+            await channel.sendTyping();
+        } catch (e) {
+            console.error('Error sending typing:', e);
+        }
+        const interval = setInterval(async () => {
+            try {
+                await channel.sendTyping();
+            } catch (e) {
+                console.error('Error sending typing:', e);
+            }
+        }, 9000);
+        channelTypingIntervals.set(channelId, interval);
+    }
+}
+
+function stopTyping(channel) {
+    const channelId = channel.id;
+    const currentCount = channelProcessingCounts.get(channelId) || 0;
+    if (currentCount > 0) {
+        channelProcessingCounts.set(channelId, currentCount - 1);
+        if (currentCount - 1 === 0) {
+            clearInterval(channelTypingIntervals.get(channelId));
+            channelTypingIntervals.delete(channelId);
+            channelProcessingCounts.delete(channelId);
+        } else {
+            // Sending a message clears the typing indicator on Discord's side.
+            // If there are still pending messages, we need to refresh the typing indicator immediately.
+            channel.sendTyping().catch(e => console.error('Error sending typing:', e));
+        }
+    }
+}
 
 discordClient.on('ready', () => {
     console.log(`Logged in`);
@@ -125,24 +164,29 @@ discordClient.on('messageCreate', async (/** @type {Message} */ message) => {
     console.log('At ', new Date(message.createdTimestamp), '. Message from user ', message.author.displayName,
         '. Text: ', message.content)
     currentProcessingMessaged++;
-    const response = await generateResponse(message.id, message.channelId);
-    // const newMessage = await message.channel.send(response);
-    if (response.length <= 1950) {
-        const newMessage = await message.reply(response);
-        thisBotMessages.add(newMessage.id);
-    } else {
-        let responseLeft = response;
-        let prevMessage = message;
-        while (responseLeft !== '') {
-            const s = responseLeft.substring(0, 1950);
-            const newMessage = await prevMessage.reply(s);
-            thisBotMessages.add(newMessage.id);
-            responseLeft = responseLeft.substring(1950);
-            prevMessage = newMessage;
-        }
-    }
 
-    currentProcessingMessaged--;
+    await startTyping(message.channel);
+    try {
+        const response = await generateResponse(message.id, message.channelId);
+        // const newMessage = await message.channel.send(response);
+        if (response.length <= 1950) {
+            const newMessage = await message.reply(response);
+            thisBotMessages.add(newMessage.id);
+        } else {
+            let responseLeft = response;
+            let prevMessage = message;
+            while (responseLeft !== '') {
+                const s = responseLeft.substring(0, 1950);
+                const newMessage = await prevMessage.reply(s);
+                thisBotMessages.add(newMessage.id);
+                responseLeft = responseLeft.substring(1950);
+                prevMessage = newMessage;
+            }
+        }
+    } finally {
+        stopTyping(message.channel);
+        currentProcessingMessaged--;
+    }
 });
 
 async function generateResponse(messageId, channelId) {

@@ -104,7 +104,8 @@ You can customize the bot's behavior using the following environment variables i
 - `GPT_MODEL`: The model to be used by the bot. You can prefix it with the provider (e.g., `openai/gpt-4.1`,
   `google/gemini-3.1-pro-preview`, `xai/grok-4.20-beta-0309-reasoning`). If no provider is specified, it defaults to OpenAI.
 - `GPT_PROMPT`: The system prompt to define the bot's behavior and personality.
-- `GPT_USE_ONLINE_SEARCH`: Controls whether Google Gemini and xAI Grok models use online search capabilities. Defaults to `1` (true). Set to `0` or `false` to disable.
+- `GPT_USE_ONLINE_SEARCH`: Controls whether Google Gemini and xAI Grok models use online search capabilities.
+  Defaults to `1` (true). Set to `0` or `false` to disable.
 - `DISCORD_BOT_TOKEN`: The token for your Discord bot.
 - `GPT_SHOW_AVAILABLE_MODELS`: Set to `1`, `true`, or `yes` to output a list of all available models from your configured
   providers to the console during startup. Useful for discovering which models you can use.
