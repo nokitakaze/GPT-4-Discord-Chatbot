@@ -72,21 +72,29 @@ discordClient.on('ready', () => {
         statusText = statusText.substring(0, 50);
     }
 
-    // https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-structure
-    // You could see available types in gateway.d.ts
-    // noinspection JSCheckFunctionSignatures,JSUnresolvedReference
-    discordClient.user.setPresence({
-        status: 'online',
-        activities: [{
-            name: statusText,
-            type: ActivityType.Custom,
-            // details: "...details...", // GPT_PROMPT
-            // state: "...state...",
-            timestamps: {
-                start: Date.now(),
-            }
-        }],
-    });
+    const startupTime = Date.now();
+
+    const updatePresence = () => {
+        // https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-structure
+        // You could see available types in gateway.d.ts
+        // noinspection JSCheckFunctionSignatures,JSUnresolvedReference
+        discordClient.user.setPresence({
+            status: 'online',
+            activities: [{
+                name: statusText,
+                type: ActivityType.Custom,
+                // details: "...details...", // GPT_PROMPT
+                // state: "...state...",
+                timestamps: {
+                    start: startupTime,
+                }
+            }],
+        });
+    };
+
+    updatePresence();
+    // Периодически обновляем статус (например, раз в 3500 секунд), чтобы он не пропадал
+    setInterval(updatePresence, 3500000);
 });
 
 discordClient.on('messageCreate', async (/** @type {Message} */ message) => {
