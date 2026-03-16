@@ -5,8 +5,7 @@ WORKDIR /app
 COPY package.json .
 RUN npm i
 
-COPY modelConfig.js .
-COPY main.js .
+COPY *.js .
 COPY .env .
 
 CMD ["node", "main.js"]

@@ -82,7 +82,7 @@ function getModelConfig(modelName, apiBaseUrl) {
 }
 
 async function showAvailableModels() {
-    const show = process.env.SHOW_AVAILABLE_MODELS;
+    const show = process.env.GPT_SHOW_AVAILABLE_MODELS;
     if (!show || !['1', 'true', 'yes'].includes(String(show).toLowerCase())) {
         return;
     }

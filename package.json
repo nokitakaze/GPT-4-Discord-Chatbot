@@ -15,6 +15,9 @@
   },
   "homepage": "https://github.com/nokitakaze/GPT-4-Discord-Chatbot",
   "dependencies": {
+    "@ai-sdk/xai": "^3.0.67",
+    "@google/genai": "^1.45.0",
+    "ai": "^6.0.116",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.1",
     "openai": "^4.97.0"

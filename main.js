@@ -1,6 +1,6 @@
 const {Client, GatewayIntentBits, Partials, ActivityType} = require('discord.js');
-const {OpenAI} = require('openai');
 const {getModelConfig, showAvailableModels} = require('./modelConfig');
+const {OpenAiClient, GoogleClient, XaiClient} = require('./gptClients');
 
 require('dotenv').config();
 
@@ -29,25 +29,20 @@ if (GPT_PROVIDER === '') {
     throw new Error(`No providers found for ${GPT_MODEL}`);
 }
 
-let API_KEY;
+let gptClient;
 switch (GPT_PROVIDER) {
     case 'openai':
-        API_KEY = process.env.OPENAI_API_KEY;
+        gptClient = new OpenAiClient(process.env);
         break;
     case 'google':
-        API_KEY = process.env.GOOGLE_API_KEY;
+        gptClient = new GoogleClient(process.env);
         break;
     case 'xai':
-        API_KEY = process.env.XAI_API_KEY;
+        gptClient = new XaiClient(process.env);
         break;
     default:
         throw new Error(`Unknown provider: ${GPT_PROVIDER}`);
 }
-
-const openaiClient = new OpenAI({
-    apiKey: API_KEY,
-    baseURL: modelConfig.baseUrl,
-});
 
 const usefulMessagesLifetime = 7 * 24 * 3600 * 1000;
 const unusefulMessagesLifetime = 24 * 3600 * 1000;
@@ -130,7 +125,7 @@ discordClient.on('messageCreate', async (/** @type {Message} */ message) => {
     console.log('At ', new Date(message.createdTimestamp), '. Message from user ', message.author.displayName,
         '. Text: ', message.content)
     currentProcessingMessaged++;
-    const response = await generateResponse(message.id, message.channelId, API_KEY);
+    const response = await generateResponse(message.id, message.channelId);
     // const newMessage = await message.channel.send(response);
     if (response.length <= 1950) {
         const newMessage = await message.reply(response);
@@ -230,9 +225,7 @@ async function generateResponse_chat(messageId, channelId) {
 
     dialog.push({role: GPT_SYSTEM_ROLE, content: [{type: "text", text: GPT_PROMPT}]});
 
-    /** https://platform.openai.com/docs/guides/text?api-mode=chat */
-    /** https://platform.openai.com/docs/api-reference/chat/create */
-    const response = await openaiClient.chat.completions.create({
+    const response = await gptClient.createChatCompletion({
         model: ACTUAL_GPT_MODEL,
         messages: [...dialog].reverse(),
         max_completion_tokens: 4096,

@@ -11,8 +11,9 @@ with responsive and intelligent dialogues.
 - The bot supports a dialogue mode with multiple users, distinguishes between users, and tracks the context of the dialogue
 - It is possible to choose the bot's model
 - Supports OpenAI, Google Gemini, and xAI models that are compatible with the Chat Completion API
-- Supports outputting a list of all available models from all configured providers at startup using the `SHOW_AVAILABLE_MODELS`
-  environment variable
+- Google Gemini and xAI Grok models are configured to use online search capabilities by default
+- Supports outputting a list of all available models from all configured providers at startup using the
+  `GPT_SHOW_AVAILABLE_MODELS` environment variable
 
 ## Requirements
 
@@ -68,6 +69,7 @@ with responsive and intelligent dialogues.
     #XAI_API_KEY=
     #GPT_MODEL=gpt-5-nano
     GPT_PROMPT="You are a helpful assistant. Respond briefly, but informatively."
+    GPT_USE_ONLINE_SEARCH=1
     DISCORD_BOT_TOKEN=your_discord_bot_token
     ```
 
@@ -100,11 +102,12 @@ You can customize the bot's behavior using the following environment variables i
 
 - `OPENAI_API_KEY` / `GOOGLE_API_KEY` / `XAI_API_KEY`: API keys for the respective providers.
 - `GPT_MODEL`: The model to be used by the bot. You can prefix it with the provider (e.g., `openai/gpt-4.1`,
-  `google/gemini-2.0-pro`, `xai/grok-2`). If no provider is specified, it defaults to OpenAI.
+  `google/gemini-3.1-pro-preview`, `xai/grok-4.20-beta-0309-reasoning`). If no provider is specified, it defaults to OpenAI.
 - `GPT_PROMPT`: The system prompt to define the bot's behavior and personality.
+- `GPT_USE_ONLINE_SEARCH`: Controls whether Google Gemini and xAI Grok models use online search capabilities. Defaults to `1` (true). Set to `0` or `false` to disable.
 - `DISCORD_BOT_TOKEN`: The token for your Discord bot.
-- `SHOW_AVAILABLE_MODELS`: Set to `1`, `true`, or `yes` to output a list of all available models from your configured providers to
-  the console during startup. Useful for discovering which models you can use.
+- `GPT_SHOW_AVAILABLE_MODELS`: Set to `1`, `true`, or `yes` to output a list of all available models from your configured
+  providers to the console during startup. Useful for discovering which models you can use.
 
 ## See also
 
