@@ -1,4 +1,4 @@
-# GPT-5 Discord Bot
+# ChatGPT-5/Gemini 3 Pro/Grok 4 Discord Bot
 
 <!-- {badges} -->
 

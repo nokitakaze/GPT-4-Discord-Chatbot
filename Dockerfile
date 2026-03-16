@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json .
 RUN npm i
 
-COPY *.js .
+COPY *.js ./
 COPY .env .
 
 CMD ["node", "main.js"]
