@@ -1,5 +1,6 @@
 const {Client, GatewayIntentBits, Partials, ActivityType} = require('discord.js');
 const {OpenAI} = require('openai');
+const {getModelConfig, showAvailableModels} = require('./modelConfig');
 
 require('dotenv').config();
 
@@ -10,71 +11,42 @@ const discordClient = new Client({
               GatewayIntentBits.GuildMessages]
 });
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
-const GPT_MODEL = process.env.GPT_MODEL ?? "gpt-4.1";
+const GPT_MODEL = process.env.GPT_MODEL ?? "openai/gpt-5-nano";
 const GPT_PROMPT = process.env.GPT_PROMPT ?? "You are a helpful assistant. Respond briefly, but informatively."
 
-let GPT_DEFAULT_SYSTEM_ROLE;
-{
-    const no_developer_messages = [
-        'o1-mini',
-        'o1-preview',
-    ];
-    const force_developer_models = [
-        'o1',
-        'o3',
-        'o4',
-    ];
+const modelConfig = getModelConfig(
+    GPT_MODEL,
+    process.env.API_BASE_URL
+);
 
-    let is_system_is_developer = false;
-    let is_no_developer = false;
-    let lowered = GPT_MODEL.toLowerCase();
+const ACTUAL_GPT_MODEL = modelConfig.actualModelName;
+const GPT_PROVIDER = modelConfig.provider;
+const GPT_SYSTEM_ROLE = process.env.GPT_SYSTEM_ROLE ?? modelConfig.systemRole;
+const GPT_NO_CHAT_COMPLETION_API = process.env.GPT_NO_CHAT_COMPLETION_API ?? modelConfig.noChatCompletionApi;
 
-    for (let prefix of no_developer_messages) {
-        if ((lowered === prefix) || lowered.startsWith(prefix + '-')) {
-            is_no_developer = true;
-            break;
-        }
-    }
-
-    if (!is_no_developer) {
-        for (let prefix of force_developer_models) {
-            if ((lowered === prefix) || lowered.startsWith(prefix + '-')) {
-                is_system_is_developer = true;
-                break;
-            }
-        }
-    }
-
-    if (is_no_developer) {
-        GPT_DEFAULT_SYSTEM_ROLE = 'user';
-    } else if (is_system_is_developer) {
-        GPT_DEFAULT_SYSTEM_ROLE = 'developer';
-    } else {
-        GPT_DEFAULT_SYSTEM_ROLE = 'system';
-    }
+if (GPT_PROVIDER === '') {
+    throw new Error(`No providers found for ${GPT_MODEL}`);
 }
 
-let GPT_DEFAULT_NO_CHAT_COMPLETION_API = false;
-{
-    const no_chat_completion_api_prefixes = [
-        'o1-pro',
-    ];
-    let lowered = GPT_MODEL.toLowerCase();
-    for (let prefix of no_chat_completion_api_prefixes) {
-        if ((lowered === prefix) || lowered.startsWith(prefix + '-')) {
-            GPT_DEFAULT_NO_CHAT_COMPLETION_API = true;
-            break;
-        }
-    }
+let API_KEY;
+switch (GPT_PROVIDER) {
+    case 'openai':
+        API_KEY = process.env.OPENAI_API_KEY;
+        break;
+    case 'google':
+        API_KEY = process.env.GOOGLE_API_KEY;
+        break;
+    case 'xai':
+        API_KEY = process.env.XAI_API_KEY;
+        break;
+    default:
+        throw new Error(`Unknown provider: ${GPT_PROVIDER}`);
 }
-
-const GPT_SYSTEM_ROLE = process.env.GPT_SYSTEM_ROLE ?? GPT_DEFAULT_SYSTEM_ROLE;
-const GPT_NO_CHAT_COMPLETION_API = process.env.GPT_NO_CHAT_COMPLETION_API ?? GPT_DEFAULT_NO_CHAT_COMPLETION_API;
 
 const openaiClient = new OpenAI({
-    apiKey: OPENAI_API_KEY,
+    apiKey: API_KEY,
+    baseURL: modelConfig.baseUrl,
 });
 
 const usefulMessagesLifetime = 7 * 24 * 3600 * 1000;
@@ -95,7 +67,7 @@ discordClient.on('ready', () => {
     console.log(`Observing ${discordClient.users.cache.size} users`);
     botName = discordClient.user.username;
 
-    let statusText = `${GPT_MODEL}. ${GPT_PROMPT}`;
+    let statusText = `${GPT_PROVIDER}/${ACTUAL_GPT_MODEL}. ${GPT_PROMPT}`;
     if (statusText.length > 50) {
         statusText = statusText.substring(0, 50);
     }
@@ -150,7 +122,7 @@ discordClient.on('messageCreate', async (/** @type {Message} */ message) => {
     console.log('At ', new Date(message.createdTimestamp), '. Message from user ', message.author.displayName,
         '. Text: ', message.content)
     currentProcessingMessaged++;
-    const response = await generateResponse(message.id, message.channelId, OPENAI_API_KEY);
+    const response = await generateResponse(message.id, message.channelId, API_KEY);
     // const newMessage = await message.channel.send(response);
     if (response.length <= 1950) {
         const newMessage = await message.reply(response);
@@ -176,7 +148,7 @@ async function generateResponse(messageId, channelId) {
             return await generateResponse_chat(messageId, channelId);
         }
 
-        return `Chat completion API is disabled for model ${GPT_MODEL}`;
+        return `Chat completion API is disabled for model ${GPT_PROVIDER}/${ACTUAL_GPT_MODEL}`;
     } catch (error) {
         console.error('Error generating response:', error.response ? error.response.data : error);
         if (error.error) {
@@ -253,7 +225,7 @@ async function generateResponse_chat(messageId, channelId) {
     /** https://platform.openai.com/docs/guides/text?api-mode=chat */
     /** https://platform.openai.com/docs/api-reference/chat/create */
     const response = await openaiClient.chat.completions.create({
-        model: GPT_MODEL,
+        model: ACTUAL_GPT_MODEL,
         messages: [...dialog].reverse(),
         max_completion_tokens: 4096,
         n: 1
@@ -391,4 +363,6 @@ process.on('SIGTERM', async function() {
     process.exit(0);
 });
 
-discordClient.login(DISCORD_BOT_TOKEN).then();
+showAvailableModels().then(() => {
+    discordClient.login(DISCORD_BOT_TOKEN).then();
+}).catch(console.error);
