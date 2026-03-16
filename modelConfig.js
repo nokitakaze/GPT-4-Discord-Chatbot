@@ -29,7 +29,7 @@ function getModelConfig(modelName, apiBaseUrl) {
         }
     }
 
-    // Определение роли системы (system role)
+    // Determining system role
     const no_developer_messages = ['o1-mini', 'o1-preview',];
     const force_developer_models = ['o1', 'o3', 'o4',];
 
@@ -58,7 +58,7 @@ function getModelConfig(modelName, apiBaseUrl) {
         systemRole = 'developer';
     }
 
-    // Определение использования Chat Completion API
+    // Determining Chat Completion API usage
     const no_chat_completion_api_prefixes = ['o1-pro',];
     for (let prefix of no_chat_completion_api_prefixes) {
         if ((loweredActual === prefix) || loweredActual.startsWith(prefix + '-')) {
@@ -67,7 +67,7 @@ function getModelConfig(modelName, apiBaseUrl) {
         }
     }
 
-    // Определение Base URL
+    // Determining Base URL
     if (provider === 'openai') {
         baseUrl = apiBaseUrl || 'https://api.openai.com/v1';
     } else if (provider === 'xai') {

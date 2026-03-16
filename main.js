@@ -93,7 +93,7 @@ discordClient.on('ready', () => {
     };
 
     updatePresence();
-    // Периодически обновляем статус (например, раз в 3500 секунд), чтобы он не пропадал
+    // Periodically update the status (e.g. every 3500 seconds) so it doesn't disappear
     setInterval(updatePresence, 3500000);
 });
 
