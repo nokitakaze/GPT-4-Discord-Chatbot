@@ -15,6 +15,9 @@ function getModelConfig(modelName, apiBaseUrl) {
     }
 
     const loweredActual = actualModelName.toLowerCase();
+    // https://developers.openai.com/api/docs/models
+    // https://ai.google.dev/gemini-api/docs/models
+    // https://docs.x.ai/developers/models
 
     if (!provider) {
         if (loweredActual.startsWith('gpt') || loweredActual.startsWith('chatgpt') || loweredActual.startsWith('o1') ||

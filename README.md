@@ -35,7 +35,7 @@ with responsive and intelligent dialogues.
 2. Create a new API Key. For simplicity, I use Permissions=All.
    https://platform.openai.com/api-keys
 3. Select the model to be used. By default, it is gpt-5-nano.
-   https://platform.openai.com/docs/models
+   https://developers.openai.com/api/docs/models
 
 ### Google
 
@@ -44,7 +44,7 @@ with responsive and intelligent dialogues.
 2. Create a new API Key.
    https://aistudio.google.com/app/apikey
 3. Select the model to be used.
-   https://ai.google.dev/gemini-api/docs/models/gemini
+   https://ai.google.dev/gemini-api/docs/models
 
 ### xAI
 
@@ -53,7 +53,7 @@ with responsive and intelligent dialogues.
 2. Create a new API Key.
    https://console.x.ai/team/api-keys
 3. Select the model to be used.
-   https://docs.x.ai/docs/models
+   https://docs.x.ai/developers/models
 
 ## Installation
 
@@ -63,21 +63,21 @@ with responsive and intelligent dialogues.
     ```
 
 2. Copy `.env.example` to `.env` and fill in your Discord bot token and API keys:
-    ```
-    OPENAI_API_KEY=your_openai_api_key
-    #GOOGLE_API_KEY=
-    #XAI_API_KEY=
-    #GPT_MODEL=gpt-5-nano
-    GPT_PROMPT="You are a helpful assistant. Respond briefly, but informatively."
-    GPT_USE_ONLINE_SEARCH=1
-    DISCORD_BOT_TOKEN=your_discord_bot_token
-    ```
+   ```
+   OPENAI_API_KEY=your_openai_api_key
+   #GOOGLE_API_KEY=
+   #XAI_API_KEY=
+   #GPT_MODEL=gpt-5-nano
+   GPT_PROMPT="You are a helpful assistant. Respond briefly, but informatively."
+   GPT_USE_ONLINE_SEARCH=1
+   DISCORD_BOT_TOKEN=your_discord_bot_token
+   ```
 
    Optionally set `GPT_MODEL` to the desired model from the lists below, just remember to set the corresponding API key (
    `OPENAI_API_KEY`, `GOOGLE_API_KEY`, or `XAI_API_KEY`):
-    - OpenAI models: https://platform.openai.com/docs/models
-    - Google models: https://ai.google.dev/gemini-api/docs/models/gemini
-    - xAI models: https://docs.x.ai/docs/models
+    - OpenAI models: https://developers.openai.com/api/docs/models
+    - Google models: https://ai.google.dev/gemini-api/docs/models
+    - xAI models: https://docs.x.ai/developers/models
 
    Examples of full model names (including provider prefixes):
     - `openai/gpt-5-nano`
