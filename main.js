@@ -12,7 +12,7 @@ const discordClient = new Client({
 });
 
 const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
-const GPT_MODEL = process.env.GPT_MODEL ?? "openai/gpt-5-nano";
+const GPT_MODEL = process.env.GPT_MODEL ?? "openai/gpt-5.5";
 const GPT_PROMPT = process.env.GPT_PROMPT ?? "You are a helpful assistant. Respond briefly, but informatively."
 
 const modelConfig = getModelConfig(GPT_MODEL, process.env.API_BASE_URL);
@@ -21,6 +21,8 @@ const ACTUAL_GPT_MODEL = modelConfig.actualModelName;
 const GPT_PROVIDER = modelConfig.provider;
 const GPT_SYSTEM_ROLE = process.env.GPT_SYSTEM_ROLE ?? modelConfig.systemRole;
 const GPT_NO_CHAT_COMPLETION_API = process.env.GPT_NO_CHAT_COMPLETION_API ?? modelConfig.noChatCompletionApi;
+const REASONING_EFFORT = process.env.REASONING_EFFORT;
+const VERBOSITY = process.env.VERBOSITY;
 
 if (GPT_PROVIDER === '') {
     throw new Error(`No providers found for ${GPT_MODEL}`);
@@ -269,12 +271,21 @@ async function generateResponse_chat(messageId, channelId) {
 
     dialog.push({role: GPT_SYSTEM_ROLE, content: [{type: "text", text: GPT_PROMPT}]});
 
-    const response = await gptClient.createChatCompletion({
+    const options = {
         model: ACTUAL_GPT_MODEL,
         messages: [...dialog].reverse(),
         max_completion_tokens: 4096,
         n: 1
-    });
+    };
+
+    if (REASONING_EFFORT) {
+        options.reasoning_effort = REASONING_EFFORT;
+    }
+    if (VERBOSITY) {
+        options.verbosity = VERBOSITY;
+    }
+
+    const response = await gptClient.createChatCompletion(options);
 
     console.log('OpenAI response. Model', response.model, '. Text: ', response.choices[0].message.content);
     return response.choices[0].message.content;

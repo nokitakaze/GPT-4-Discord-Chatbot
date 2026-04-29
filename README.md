@@ -34,7 +34,7 @@ with responsive and intelligent dialogues.
    https://platform.openai.com/account/billing/overview
 2. Create a new API Key. For simplicity, I use Permissions=All.
    https://platform.openai.com/api-keys
-3. Select the model to be used. By default, it is gpt-5-nano.
+3. Select the model to be used. By default, it is gpt-5.5.
    https://developers.openai.com/api/docs/models
 
 ### Google
@@ -67,7 +67,7 @@ with responsive and intelligent dialogues.
    OPENAI_API_KEY=your_openai_api_key
    #GOOGLE_API_KEY=
    #XAI_API_KEY=
-   #GPT_MODEL=gpt-5-nano
+   #GPT_MODEL=gpt-5.5
    GPT_PROMPT="You are a helpful assistant. Respond briefly, but informatively."
    GPT_USE_ONLINE_SEARCH=1
    DISCORD_BOT_TOKEN=your_discord_bot_token
@@ -80,7 +80,7 @@ with responsive and intelligent dialogues.
     - xAI models: https://docs.x.ai/developers/models
 
    Examples of full model names (including provider prefixes):
-    - `openai/gpt-5-nano`
+    - `openai/gpt-5.5`
     - `google/gemini-3.1-pro-preview`
     - `xai/grok-4.20-beta-0309-reasoning`
 
