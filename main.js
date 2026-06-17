@@ -185,6 +185,9 @@ discordClient.on('messageCreate', async (/** @type {Message} */ message) => {
                 prevMessage = newMessage;
             }
         }
+    } catch (e) {
+        const newMessage = await message.reply('Sorry, I am unable to generate a response at this time: ' + e.toString());
+        thisBotMessages.add(newMessage.id);
     } finally {
         stopTyping(message.channel);
         currentProcessingMessaged--;

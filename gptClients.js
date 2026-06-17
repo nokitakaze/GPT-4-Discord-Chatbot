@@ -96,12 +96,20 @@ class GoogleClient extends IGptClient {
             config: config
         });
 
+        let response_text = response.text;
+        if (typeof response.promptFeedback.blockReason !== 'undefined') {
+            response_text = 'Google Model ' + response.modelVersion + ': ' + response.promptFeedback.blockReason;
+        } else if (typeof response_text === 'undefined') {
+            response_text = 'Google Model ' + response.modelVersion + ': ' +
+                            'An error occurred while generating a response. Empty response';
+        }
+
         return {
             model: options.model,
             choices: [
                 {
                     message: {
-                        content: response.text
+                        content: response_text
                     }
                 }
             ]
