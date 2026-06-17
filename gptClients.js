@@ -97,7 +97,8 @@ class GoogleClient extends IGptClient {
         });
 
         let response_text = response.text;
-        if (typeof response.promptFeedback.blockReason !== 'undefined') {
+        if ((typeof response.promptFeedback !== 'undefined') &&
+            (typeof response.promptFeedback.blockReason !== 'undefined')) {
             response_text = 'Google Model ' + response.modelVersion + ': ' + response.promptFeedback.blockReason;
         } else if (typeof response_text === 'undefined') {
             response_text = 'Google Model ' + response.modelVersion + ': ' +
