@@ -78,6 +78,15 @@ class GoogleClient extends IGptClient {
         }
 
         const config = {};
+        if (options.disable_safety_settings && ['1', 'yes', 'true'].includes(String(options.disable_safety_settings).toLowerCase())) {
+            // https://docs.cloud.google.com/gemini-enterprise-agent-platform/reference/rest/v1/HarmCategory
+            config.safetySettings = [
+                { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+                { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+                { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+                { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
+            ];
+        }
         if (systemInstructionParts.length > 0) {
             config.systemInstruction = systemInstructionParts.join('\n');
         }

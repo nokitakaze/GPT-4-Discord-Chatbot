@@ -23,6 +23,7 @@ const GPT_SYSTEM_ROLE = process.env.GPT_SYSTEM_ROLE ?? modelConfig.systemRole;
 const GPT_NO_CHAT_COMPLETION_API = process.env.GPT_NO_CHAT_COMPLETION_API ?? modelConfig.noChatCompletionApi;
 const REASONING_EFFORT = process.env.REASONING_EFFORT;
 const VERBOSITY = process.env.VERBOSITY;
+const DISABLE_SAFETY_SETTINGS = process.env.DISABLE_SAFETY_SETTINGS;
 
 if (GPT_PROVIDER === '') {
     throw new Error(`No providers found for ${GPT_MODEL}`);
@@ -286,6 +287,9 @@ async function generateResponse_chat(messageId, channelId) {
     }
     if (VERBOSITY) {
         options.verbosity = VERBOSITY;
+    }
+    if (DISABLE_SAFETY_SETTINGS) {
+        options.disable_safety_settings = DISABLE_SAFETY_SETTINGS;
     }
 
     const response = await gptClient.createChatCompletion(options);
