@@ -33,6 +33,8 @@ class OpenAiClient extends IGptClient {
     async createChatCompletion(options) {
         /** https://platform.openai.com/docs/guides/text?api-mode=chat */
         /** https://platform.openai.com/docs/api-reference/chat/create */
+        delete options.disable_safety_settings;
+
         // noinspection ES6RedundantAwait,JSCheckFunctionSignatures
         return await this.client.chat.completions.create(options);
     }
